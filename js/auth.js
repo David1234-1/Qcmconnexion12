@@ -2,9 +2,20 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Auth.js chargé');
 
-    // Attendre que Firebase soit chargé
-    if (typeof firebase === 'undefined') {
-        console.error('Firebase non chargé');
+    // Test de connexion à Firebase
+    try {
+        if (typeof firebase === 'undefined' || !firebase.apps.length) {
+            throw new Error('Firebase non chargé ou mal configuré. Vérifiez la configuration dans js/firebase-config.js');
+        }
+        if (!firebase.auth || !firebase.firestore) {
+            throw new Error('Firebase Auth ou Firestore non disponible.');
+        }
+    } catch (e) {
+        const messageDiv = document.getElementById('message');
+        if (messageDiv) {
+            messageDiv.innerHTML = `<div class='error'>Erreur de configuration Firebase : ${e.message}</div>`;
+        }
+        alert('Erreur de configuration Firebase : ' + e.message);
         return;
     }
 
