@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub - FAQ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        .faq-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-question:hover {
+            background: #f8fafc;
+        }
+        
+        .faq-question h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        .faq-answer.active {
+            padding: 1.5rem;
+            max-height: 200px;
+        }
+        
+        .faq-answer p {
+            margin: 0;
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        .faq-toggle {
+            color: #64748b;
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.active .faq-toggle {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>StudyHub</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="index.html#fonctionnalites">Fonctionnalités</a></li>
+                <li><a href="index.html#tarifs">Tarifs</a></li>
+                <li><a href="index.html#temoignages">Témoignages</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="login.html" class="btn-login">Connexion</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section FAQ -->
+    <section class="hero" style="min-height: auto; padding: 120px 0 80px;">
+        <div class="container">
+            <div class="faq-container">
+                <div class="section-header">
+                    <h1>Questions fréquentes</h1>
+                    <p>Trouvez rapidement les réponses à vos questions</p>
+                </div>
+
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Comment fonctionne l'import de cours ?</h3>
+                            <i class="fas fa-chevron-down faq-toggle"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Vous pouvez importer vos cours au format PDF. L'IA analyse automatiquement le contenu et génère des QCM, flashcards et résumés. Le processus prend quelques secondes et vous recevez une notification une fois terminé.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Quels formats de fichiers sont supportés ?</h3>
+                            <i class="fas fa-chevron-down faq-toggle"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Actuellement, nous supportons uniquement les fichiers PDF. La taille maximale est de 10MB par fichier. Nous travaillons sur l'ajout d'autres formats comme Word et PowerPoint.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Comment l'IA génère-t-elle les QCM ?</h3>
+                            <i class="fas fa-chevron-down faq-toggle"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Notre IA utilise des algorithmes avancés pour analyser le contenu de vos cours, identifier les concepts clés et générer des questions pertinentes avec 4 réponses possibles. La difficulté peut être ajustée selon vos besoins.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Mes données sont-elles sécurisées ?</h3>
+                            <i class="fas fa-chevron-down faq-toggle"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Absolument. Nous utilisons Firebase pour l'authentification et le stockage sécurisé. Vos données sont chiffrées et nous ne partageons jamais vos informations personnelles avec des tiers.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Puis-je utiliser StudyHub sur mobile ?</h3>
+                            <i class="fas fa-chevron-down faq-toggle"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Oui ! StudyHub est entièrement responsive et fonctionne parfaitement sur tous les appareils : ordinateurs, tablettes et smartphones. Vous pouvez réviser où que vous soyez.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Comment suivre mes progrès ?</h3>
+                            <i class="fas fa-chevron-down faq-toggle"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Le dashboard vous montre vos statistiques en temps réel : nombre de cours importés, QCM générés, flashcards créées et votre score moyen. Vous pouvez également voir votre progression par matière.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Que se passe-t-il si je perds ma connexion ?</h3>
+                            <i class="fas fa-chevron-down faq-toggle"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Vos données sont sauvegardées automatiquement dans le cloud. Même si vous perdez votre connexion pendant l'import d'un cours, vous pouvez reprendre là où vous vous êtes arrêté une fois reconnecté.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Puis-je partager mes QCM avec d'autres étudiants ?</h3>
+                            <i class="fas fa-chevron-down faq-toggle"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Cette fonctionnalité est en cours de développement. Bientôt, vous pourrez partager vos QCM et flashcards avec vos camarades de classe et créer des groupes de révision.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>StudyHub</h3>
+                    <p>La plateforme de révision médicale intelligente</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liens rapides</h4>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="index.html#fonctionnalites">Fonctionnalités</a></li>
+                        <li><a href="index.html#tarifs">Tarifs</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>contact@studyhub-med.com</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 StudyHub. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const answer = faqItem.querySelector('.faq-answer');
+            
+            // Fermer toutes les autres réponses
+            document.querySelectorAll('.faq-item').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                    item.querySelector('.faq-answer').classList.remove('active');
+                }
+            });
+            
+            // Basculer l'état actuel
+            faqItem.classList.toggle('active');
+            answer.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
