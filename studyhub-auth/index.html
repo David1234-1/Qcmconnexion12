@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StudyHub - Connexion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Connexion à StudyHub</h1>
+    <input type="email" id="email" placeholder="Adresse email" />
+    <input type="password" id="password" placeholder="Mot de passe" />
+    <button id="login-btn">Se connecter</button>
+    <p>Pas encore de compte ? <a href="#" id="register-btn">Créer un compte</a></p>
+    <p><a href="#" id="forgot-btn">Mot de passe oublié ?</a></p>
+    <button id="google-btn" class="google">Connexion avec Google</button>
+    <div id="message"></div>
+  </div>
+
+  <!-- Mini fenêtre mot de passe oublié -->
+  <div id="reset-popup" class="popup">
+    <h2>Réinitialiser le mot de passe</h2>
+    <input id="reset-email" type="email" placeholder="Votre adresse email">
+    <button id="reset-send-btn">Envoyer le lien</button>
+    <button id="reset-cancel-btn" class="cancel">Annuler</button>
+  </div>
+
+  <div id="overlay" class="overlay"></div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

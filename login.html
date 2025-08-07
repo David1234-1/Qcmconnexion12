@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub - Connexion</title>
+    <link rel="stylesheet" href="css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="index.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour à l'accueil
+                </a>
+                <h1>Connexion à StudyHub</h1>
+                <p>Accédez à votre espace de révision intelligent</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="votre@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" placeholder="Votre mot de passe" required>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Se connecter
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>ou</span>
+            </div>
+
+            <button id="google-login" class="btn-google">
+                <i class="fab fa-google"></i>
+                Connexion avec Google
+            </button>
+
+            <script type="module">
+              import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+              const supabase = createClient(
+                'https://xggnrnwyvqslxigblhih.supabase.co',
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlwd21lemtsaXZmcWVnc2tjemx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5NTczODksImV4cCI6MjA2OTUzMzM4OX0.ylmGI6yUfZtEtgIaS4FYQqAI6vJsIblAeYsob9ECXBY'
+              )
+              document.getElementById('google-login').addEventListener('click', async () => {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                  provider: 'google',
+                })
+                if (error) {
+                  alert('Erreur : ' + error.message)
+                }
+              })
+            </script>
+
+            <div class="auth-links">
+                <a href="#" id="forgotPassword">Mot de passe oublié ?</a>
+                <span>Pas encore de compte ? <a href="register.html">Créer un compte</a></span>
+            </div>
+
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Modal mot de passe oublié -->
+    <div id="resetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Réinitialiser le mot de passe</h3>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="resetForm">
+                <div class="form-group">
+                    <label for="resetEmail">Email</label>
+                    <input type="email" id="resetEmail" placeholder="votre@email.com" required>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                    Envoyer le lien
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>

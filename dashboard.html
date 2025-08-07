@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>StudyHub</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="#import" class="nav-link">
+                    <i class="fas fa-upload"></i>
+                    Importer
+                </a>
+                <!-- Les liens QCM, Flashcards et Résumés sont masqués ici -->
+                <!--<a href="#qcm" class="nav-link">
+                    <i class="fas fa-question-circle"></i>
+                    QCM
+                </a>
+                <a href="#flashcards" class="nav-link">
+                    <i class="fas fa-layer-group"></i>
+                    Flashcards
+                </a>
+                <a href="#resumes" class="nav-link">
+                    <i class="fas fa-file-alt"></i>
+                    Résumés
+                </a>-->
+                <a href="#statistiques" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    Statistiques
+                </a>
+                <a href="#calendrier" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    Calendrier
+                </a>
+                <a href="#contact" class="nav-link">
+                    <i class="fas fa-envelope"></i>
+                    Contact
+                </a>
+            </div>
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="userName">Chargement...</span>
+                    <div class="user-dropdown">
+                        <button class="btn-settings" onclick="toggleUserMenu()">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <div class="dropdown-menu" id="userDropdown">
+                            <a href="#parametres" onclick="showSection('parametres')">
+                                <i class="fas fa-cog"></i>
+                                Paramètres
+                            </a>
+                            <a href="#profil" onclick="showSection('profil')">
+                                <i class="fas fa-user-edit"></i>
+                                Profil
+                            </a>
+                            <hr>
+                            <a href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <!-- Dashboard -->
+        <section id="dashboard" class="dashboard-section active">
+            <div class="container">
+                <div class="dashboard-header">
+                    <h1>Bienvenue sur StudyHub</h1>
+                    <p>Votre espace de révision intelligente</p>
+                </div>
+
+                <!-- Statistiques rapides -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="coursCount">0</h3>
+                            <p>Cours importés</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="qcmCount">0</h3>
+                            <p>QCM générés</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="flashcardsCount">0</h3>
+                            <p>Flashcards</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="scoreMoyen">0%</h3>
+                            <p>Score moyen</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions rapides (dans la section Dashboard) -->
+                <div class="quick-actions" id="dashboardActions">
+                    <h2>Actions rapides</h2>
+                    <div class="actions-grid">
+                        <button class="action-btn" onclick="showSection('import')">
+                            <i class="fas fa-upload"></i>
+                            <span>Importer un cours</span>
+                        </button>
+                        <button class="action-btn" onclick="showSection('qcm')">
+                            <i class="fas fa-play"></i>
+                            <span>Commencer un QCM</span>
+                        </button>
+                        <button class="action-btn" onclick="showSection('flashcards')">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Réviser les flashcards</span>
+                        </button>
+                        <button class="action-btn" onclick="showSection('resumes')">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Voir les résumés</span>
+                        </button>
+                        <button class="action-btn" onclick="showSection('calendrier')">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Mon calendrier</span>
+                        </button>
+                        <button class="action-btn" onclick="showSection('contact')">
+                            <i class="fas fa-envelope"></i>
+                            <span>Contact</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cours récents -->
+                <div class="recent-courses">
+                    <h2>Cours récents</h2>
+                    <div id="recentCoursesList" class="courses-grid">
+                        <div class="empty-state">
+                            <i class="fas fa-file-pdf"></i>
+                            <h3>Aucun cours importé</h3>
+                            <p>Commencez par importer votre premier cours</p>
+                            <button onclick="showSection('import')" class="btn-primary">
+                                Importer un cours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Import de cours -->
+        <section id="import" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Importer un cours</h1>
+                    <p>Importez vos PDF et laissez l'IA générer automatiquement des QCM et flashcards</p>
+                </div>
+
+                <div class="import-container">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Glissez-déposez votre PDF ici</h3>
+                            <p>ou cliquez pour sélectionner un fichier</p>
+                            <input type="file" id="fileInput" accept=".pdf,image/*" hidden>
+                            <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
+                                Choisir un fichier
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="import-options">
+                        <h3>Options de génération</h3>
+                        <div class="options-grid">
+                            <div class="option-group">
+                                <label for="qcmCount">Nombre de QCM</label>
+                                <select id="qcmCount">
+                                    <option value="5">5 questions</option>
+                                    <option value="10" selected>10 questions</option>
+                                    <option value="15">15 questions</option>
+                                    <option value="20">20 questions</option>
+                                </select>
+                            </div>
+                            <div class="option-group">
+                                <label for="difficulty">Niveau de difficulté</label>
+                                <select id="difficulty">
+                                    <option value="facile">Facile</option>
+                                    <option value="moyen" selected>Moyen</option>
+                                    <option value="difficile">Difficile</option>
+                                </select>
+                            </div>
+                            <div class="option-group">
+                                <label for="flashcardsCount">Nombre de flashcards</label>
+                                <select id="flashcardsCount">
+                                    <option value="10">10 cartes</option>
+                                    <option value="20" selected>20 cartes</option>
+                                    <option value="30">30 cartes</option>
+                                    <option value="50">50 cartes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="import-progress" id="importProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p id="progressText">Analyse du document...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QCM -->
+        <section id="qcm" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>QCM</h1>
+                    <p>Entraînez-vous avec les QCM générés par l'IA</p>
+                </div>
+
+                <div class="qcm-container">
+                    <div class="qcm-list" id="qcmList">
+                        <div class="empty-state">
+                            <i class="fas fa-question-circle"></i>
+                            <h3>Aucun QCM disponible</h3>
+                            <p>Importez un cours pour générer des QCM</p>
+                            <button onclick="showSection('import')" class="btn-primary">
+                                Importer un cours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flashcards -->
+        <section id="flashcards" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Flashcards</h1>
+                    <p>Révisez efficacement avec les flashcards générées</p>
+                </div>
+
+                <div class="flashcards-container">
+                    <div class="flashcards-list" id="flashcardsList">
+                        <div class="empty-state">
+                            <i class="fas fa-layer-group"></i>
+                            <h3>Aucune flashcard disponible</h3>
+                            <p>Importez un cours pour générer des flashcards</p>
+                            <button onclick="showSection('import')" class="btn-primary">
+                                Importer un cours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Résumés -->
+        <section id="resumes" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Résumés</h1>
+                    <p>Consultez les résumés générés par l'IA</p>
+                </div>
+
+                <div class="resumes-container">
+                    <div class="resumes-list" id="resumesList">
+                        <div class="empty-state">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>Aucun résumé disponible</h3>
+                            <p>Importez un cours pour générer des résumés</p>
+                            <button onclick="showSection('import')" class="btn-primary">
+                                Importer un cours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistiques -->
+        <section id="statistiques" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Statistiques</h1>
+                    <p>Suivez vos progrès et vos performances</p>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stats-grid-large">
+                        <div class="stat-card-large">
+                            <h3>Progression globale</h3>
+                            <div class="progress-circle">
+                                <div class="progress-circle-fill" id="globalProgress"></div>
+                                <span id="globalProgressText">0%</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-large">
+                            <h3>Score moyen QCM</h3>
+                            <div class="score-display">
+                                <span id="averageScore">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-details">
+                        <h3>Détails par matière</h3>
+                        <div id="subjectStats" class="subject-stats">
+                            <div class="empty-state">
+                                <i class="fas fa-chart-bar"></i>
+                                <h3>Aucune donnée disponible</h3>
+                                <p>Commencez à réviser pour voir vos statistiques</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Paramètres -->
+        <section id="parametres" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Paramètres</h1>
+                    <p>Personnalisez votre expérience StudyHub</p>
+                </div>
+
+                <div class="settings-container">
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <h3>Langue</h3>
+                                <p>Choisissez la langue de l'interface</p>
+                            </div>
+                            <div class="setting-content">
+                                <select id="languageSelect" onchange="changeLanguage(this.value)">
+                                    <option value="fr" selected>Français</option>
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                    <option value="de">Deutsch</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <h3>Thème</h3>
+                                <p>Choisissez l'apparence de l'interface</p>
+                            </div>
+                            <div class="setting-content">
+                                <div class="theme-options">
+                                    <label class="theme-option">
+                                        <input type="radio" name="theme" value="light" checked onchange="changeTheme(this.value)">
+                                        <span class="theme-preview light"></span>
+                                        <span>Clair</span>
+                                    </label>
+                                    <label class="theme-option">
+                                        <input type="radio" name="theme" value="dark" onchange="changeTheme(this.value)">
+                                        <span class="theme-preview dark"></span>
+                                        <span>Sombre</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <h3>Notifications</h3>
+                                <p>Gérez vos préférences de notifications</p>
+                            </div>
+                            <div class="setting-content">
+                                <div class="notification-options">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="emailNotifications" checked>
+                                        <span class="checkmark"></span>
+                                        Notifications par email
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="pushNotifications" checked>
+                                        <span class="checkmark"></span>
+                                        Notifications push
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" id="reminderNotifications">
+                                        <span class="checkmark"></span>
+                                        Rappels de révision
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profil -->
+        <section id="profil" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Profil</h1>
+                    <p>Gérez vos informations personnelles</p>
+                </div>
+
+                <div class="profile-container">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar-section">
+                                <div class="profile-avatar" id="profileAvatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <button class="btn-change-avatar" onclick="changeAvatar()">
+                                    <i class="fas fa-camera"></i>
+                                    Changer l'avatar
+                                </button>
+                            </div>
+                        </div>
+
+                        <form id="profileForm" class="profile-form">
+                            <div class="form-group">
+                                <label for="profileName">Nom complet</label>
+                                <input type="text" id="profileName" placeholder="Votre nom complet">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="profileEmail">Email</label>
+                                <input type="email" id="profileEmail" placeholder="votre@email.com" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="profileBio">Bio</label>
+                                <textarea id="profileBio" placeholder="Parlez-nous de vous..." rows="3"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i>
+                                Sauvegarder les modifications
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calendrier -->
+        <section id="calendrier" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Mon Calendrier</h1>
+                    <p>Gérez votre emploi du temps et planifiez vos révisions</p>
+                </div>
+
+                <div class="calendar-container">
+                    <div id="calendarContainer">
+                        <!-- Le calendrier sera généré ici par JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Contact</h1>
+                    <p>Contactez-nous pour toute question ou suggestion</p>
+                </div>
+
+                <div class="contact-container">
+                    <div class="contact-form-card">
+                        <h3>Envoyez-nous un message</h3>
+                        <form id="dashboardContactForm" class="contact-form">
+                            <div class="form-group">
+                                <label for="contactName">Nom *</label>
+                                <input type="text" id="contactName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">Email *</label>
+                                <input type="email" id="contactEmail" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactMessage">Message *</label>
+                                <textarea id="contactMessage" name="message" rows="5" placeholder="Votre message..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                                Envoyer le message
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="contact-info">
+                        <div class="contact-info-card">
+                            <h3>Informations de contact</h3>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <h4>Email</h4>
+                                    <p>contact@studyhub-med.com</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <h4>Réponse</h4>
+                                    <p>Sous 24-48h</p>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-headset"></i>
+                                <div>
+                                    <h4>Support</h4>
+                                    <p>Assistance technique disponible</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal QCM -->
+    <div id="qcmModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="qcmTitle">QCM</h3>
+                <button class="close-btn" onclick="closeQcmModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="qcm-content" id="qcmContent">
+                <!-- Le contenu du QCM sera injecté ici -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Flashcards -->
+    <div id="flashcardsModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Flashcards</h3>
+                <button class="close-btn" onclick="closeFlashcardsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="flashcards-content" id="flashcardsContent">
+                <!-- Le contenu des flashcards sera injecté ici -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/pdf.min.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
