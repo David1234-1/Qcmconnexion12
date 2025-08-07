@@ -191,11 +191,11 @@
                     <div class="upload-area" id="uploadArea">
                         <div class="upload-content">
                             <i class="fas fa-cloud-upload-alt"></i>
-                            <h3>Glissez-déposez votre PDF ici</h3>
+                            <h3>Glissez-déposez votre fichier ici</h3>
                             <p>ou cliquez pour sélectionner un fichier</p>
-                            <input type="file" id="fileInput" accept=".pdf,image/*" hidden>
-                            <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
-                                Choisir un fichier
+                            <input type="file" id="fileInput" accept=".pdf,.docx,.txt" style="display: none;" />
+                            <button class="btn-primary" type="button" onclick="document.getElementById('fileInput').click()">
+                                Importer un fichier
                             </button>
                         </div>
                     </div>
@@ -481,14 +481,13 @@
                     <h1>Mon Calendrier</h1>
                     <p>Gérez votre emploi du temps et planifiez vos révisions</p>
                 </div>
-
-                <div class="calendar-container">
-                    <div id="calendarContainer">
-                        <!-- Le calendrier sera généré ici par JavaScript -->
-                    </div>
-                </div>
+                <div id="fullcalendar"></div>
             </div>
         </section>
+        <!-- FullCalendar CSS/JS -->
+        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+        <script src="js/fullcalendar-init.js"></script>
 
         <!-- Contact -->
         <section id="contact" class="dashboard-section">

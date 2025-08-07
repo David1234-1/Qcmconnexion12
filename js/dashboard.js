@@ -65,7 +65,7 @@ function setupEventListeners() {
     if (uploadArea) {
         uploadArea.addEventListener('dragover', handleDragOver);
         uploadArea.addEventListener('drop', handleDrop);
-        uploadArea.addEventListener('click', () => fileInput.click());
+        // Ne pas forcer le click sur l'input ici, le bouton le fait déjà
     }
 
     // Formulaire de profil
@@ -108,25 +108,28 @@ function handleDrop(event) {
 }
 
 function processFiles(files) {
-    const pdfFiles = files.filter(file => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
-    
-    if (pdfFiles.length === 0) {
-        showNotification('Veuillez sélectionner des fichiers PDF valides.', 'error');
+    // Accepter PDF, DOCX, TXT
+    const validFiles = files.filter(file =>
+        file.type === 'application/pdf' ||
+        file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+        file.type === 'text/plain' ||
+        file.name.toLowerCase().endsWith('.pdf') ||
+        file.name.toLowerCase().endsWith('.docx') ||
+        file.name.toLowerCase().endsWith('.txt')
+    );
+    if (validFiles.length === 0) {
+        showNotification('Veuillez sélectionner un fichier PDF, DOCX ou TXT valide.', 'error');
         return;
     }
-
     showImportProgress();
-    
-    // Simuler le traitement des fichiers
     let processedCount = 0;
-    pdfFiles.forEach((file, index) => {
+    validFiles.forEach((file, index) => {
         setTimeout(() => {
             processFile(file);
             processedCount++;
-            
-            if (processedCount === pdfFiles.length) {
+            if (processedCount === validFiles.length) {
                 hideImportProgress();
-                showNotification(`${pdfFiles.length} fichier(s) importé(s) avec succès !`, 'success');
+                showNotification(`${validFiles.length} fichier(s) importé(s) avec succès !`, 'success');
                 updateDashboardStats();
                 displayRecentCourses();
             }

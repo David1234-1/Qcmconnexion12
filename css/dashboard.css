@@ -1851,3 +1851,20 @@ body {
         gap: 1rem;
     }
 }
+
+#fullcalendar {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+  padding: 1rem;
+  margin-bottom: 2rem;
+  min-height: 500px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+@media (max-width: 768px) {
+  #fullcalendar {
+    padding: 0.5rem;
+    min-height: 350px;
+  }
+}
