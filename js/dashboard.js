@@ -617,77 +617,15 @@ function handleProfileSubmit(event) {
 
 // Gestion du contact
 function handleContactSubmit(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
-    const data = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        message: formData.get('message')
-    };
-
-    // Validation
-    if (!data.name || !data.email || !data.message) {
-        showNotification('Veuillez remplir tous les champs.', 'error');
-        return;
-    }
-
-    // Envoi vers Formspree
-    fetch('https://formspree.io/f/mqalgpdg', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (response.ok) {
-            showNotification('Message envoyé avec succès !', 'success');
-            event.target.reset();
-        } else {
-            throw new Error('Erreur lors de l\'envoi');
-        }
-    })
-    .catch(error => {
-        showNotification('Erreur lors de l\'envoi du message.', 'error');
-    });
+    // Le formulaire sera soumis directement à Formspree
+    // On ajoute juste une notification de succès
+    showNotification('Envoi du message en cours...', 'info');
 }
 
 function handleDashboardContactSubmit(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
-    const data = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        message: formData.get('message')
-    };
-
-    // Validation
-    if (!data.name || !data.email || !data.message) {
-        showNotification('Veuillez remplir tous les champs.', 'error');
-        return;
-    }
-
-    // Envoi vers Formspree
-    fetch('https://formspree.io/f/mqalgpdg', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (response.ok) {
-            showNotification('Message envoyé avec succès !', 'success');
-            event.target.reset();
-        } else {
-            throw new Error('Erreur lors de l\'envoi');
-        }
-    })
-    .catch(error => {
-        showNotification('Erreur lors de l\'envoi du message.', 'error');
-    });
+    // Le formulaire sera soumis directement à Formspree
+    // On ajoute juste une notification de succès
+    showNotification('Envoi du message en cours...', 'info');
 }
 
 // Auto-remplissage du formulaire de contact pour les utilisateurs connectés

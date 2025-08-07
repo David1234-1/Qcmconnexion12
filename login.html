@@ -46,22 +46,6 @@
                 Connexion avec Google
             </button>
 
-            <script type="module">
-              import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-              const supabase = createClient(
-                'https://xggnrnwyvqslxigblhih.supabase.co',
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlwd21lemtsaXZmcWVnc2tjemx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5NTczODksImV4cCI6MjA2OTUzMzM4OX0.ylmGI6yUfZtEtgIaS4FYQqAI6vJsIblAeYsob9ECXBY'
-              )
-              document.getElementById('google-login').addEventListener('click', async () => {
-                const { data, error } = await supabase.auth.signInWithOAuth({
-                  provider: 'google',
-                })
-                if (error) {
-                  alert('Erreur : ' + error.message)
-                }
-              })
-            </script>
-
             <div class="auth-links">
                 <a href="#" id="forgotPassword">Mot de passe oublié ?</a>
                 <span>Pas encore de compte ? <a href="register.html">Créer un compte</a></span>
