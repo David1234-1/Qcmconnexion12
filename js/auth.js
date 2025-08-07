@@ -1,13 +1,19 @@
-// Version simplifiée de l'authentification
+// Authentification Firebase
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Auth.js chargé');
+
+    // Attendre que Firebase soit chargé
+    if (typeof firebase === 'undefined') {
+        console.error('Firebase non chargé');
+        return;
+    }
 
     // Gestion de la connexion
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            console.log('Tentative de connexion');
+            console.log('Tentative de connexion Firebase');
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -19,20 +25,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Simulation de connexion réussie
-            const userData = {
-                id: Date.now(),
-                email: email,
-                name: email.split('@')[0]
-            };
+            // Afficher un message de chargement
+            messageDiv.innerHTML = '<div class="info">Connexion en cours...</div>';
             
-            localStorage.setItem('currentUser', JSON.stringify(userData));
-            
-            messageDiv.innerHTML = '<div class="success">Connexion réussie ! Redirection...</div>';
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1000);
+            try {
+                const result = await firebaseAuth.loginWithEmail(email, password);
+                
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">Connexion réussie ! Redirection...</div>';
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = `<div class="error">Erreur de connexion: ${result.error}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="error">Erreur de connexion</div>';
+                console.error('Erreur connexion:', error);
+            }
         });
     }
 
@@ -64,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const resetForm = document.getElementById('resetForm');
     if (resetForm) {
-        resetForm.addEventListener('submit', function(e) {
+        resetForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('resetEmail').value;
@@ -75,9 +85,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            messageDiv.innerHTML = '<div class="success">Email de réinitialisation envoyé !</div>';
-            document.getElementById('resetModal').style.display = 'none';
-            document.getElementById('resetEmail').value = '';
+            try {
+                const result = await firebaseAuth.resetPassword(email);
+                
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">Email de réinitialisation envoyé !</div>';
+                    document.getElementById('resetModal').style.display = 'none';
+                    document.getElementById('resetEmail').value = '';
+                } else {
+                    messageDiv.innerHTML = `<div class="error">Erreur: ${result.error}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="error">Erreur lors de l\'envoi de l\'email</div>';
+                console.error('Erreur réinitialisation:', error);
+            }
         });
     }
 

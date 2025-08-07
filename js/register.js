@@ -1,20 +1,19 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-const supabase = createClient(
-    'https://xggnrnwyvqslxigblhih.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlwd21lemtsaXZmcWVnc2tjemx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5NTczODksImV4cCI6MjA2OTUzMzM4OX0.ylmGI6yUfZtEtgIaS4FYQqAI6vJsIblAeYsob9ECXBY'
-)
-
-// Version simplifiée de l'inscription
+// Inscription Firebase
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Register.js chargé');
+
+    // Attendre que Firebase soit chargé
+    if (typeof firebase === 'undefined') {
+        console.error('Firebase non chargé');
+        return;
+    }
 
     // Gestion de l'inscription
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
+        registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            console.log('Tentative d\'inscription');
+            console.log('Tentative d\'inscription Firebase');
             
             const displayName = document.getElementById('displayName').value;
             const email = document.getElementById('email').value;
@@ -44,20 +43,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Simulation d'inscription réussie
-            const userData = {
-                id: Date.now(),
-                email: email,
-                name: displayName
-            };
+            // Afficher un message de chargement
+            messageDiv.innerHTML = '<div class="info">Création du compte en cours...</div>';
             
-            localStorage.setItem('currentUser', JSON.stringify(userData));
-            
-            messageDiv.innerHTML = '<div class="success">Compte créé avec succès ! Redirection...</div>';
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1000);
+            try {
+                const result = await firebaseAuth.registerWithEmail(email, password, displayName);
+                
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">Compte créé avec succès ! Redirection...</div>';
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = `<div class="error">Erreur d'inscription: ${result.error}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="error">Erreur lors de la création du compte</div>';
+                console.error('Erreur inscription:', error);
+            }
         });
     }
 

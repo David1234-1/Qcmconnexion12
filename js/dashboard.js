@@ -22,6 +22,9 @@ function initializeApp() {
         updateUserInterface();
     }
 
+    // Charger l'avatar utilisateur
+    loadUserAvatar();
+
     // Charger les données des cours
     const savedCourses = localStorage.getItem('courses');
     if (savedCourses) {
@@ -152,6 +155,11 @@ function processFile(file) {
     courses.push(course);
     localStorage.setItem('courses', JSON.stringify(courses));
 
+    // Sauvegarder dans Firebase si disponible
+    if (typeof firebaseAuth !== 'undefined' && firebaseAuth.saveCourseToFirebase) {
+        firebaseAuth.saveCourseToFirebase(course);
+    }
+
     // Générer des QCM et flashcards simulés
     generateQcmForCourse(course);
     generateFlashcardsForCourse(course);
@@ -169,6 +177,11 @@ function generateQcmForCourse(course) {
 
     qcmData.push(qcm);
     localStorage.setItem('qcmData', JSON.stringify(qcmData));
+
+    // Sauvegarder dans Firebase si disponible
+    if (typeof firebaseAuth !== 'undefined' && firebaseAuth.saveQcmToFirebase) {
+        firebaseAuth.saveQcmToFirebase(qcm);
+    }
 }
 
 function generateFlashcardsForCourse(course) {
@@ -182,6 +195,11 @@ function generateFlashcardsForCourse(course) {
 
     flashcardsData.push(flashcards);
     localStorage.setItem('flashcardsData', JSON.stringify(flashcardsData));
+
+    // Sauvegarder dans Firebase si disponible
+    if (typeof firebaseAuth !== 'undefined' && firebaseAuth.saveFlashcardsToFirebase) {
+        firebaseAuth.saveFlashcardsToFirebase(flashcards);
+    }
 }
 
 function generateMockQuestions(count) {
@@ -1032,8 +1050,12 @@ function updateUserInterface() {
 }
 
 function logout() {
-    localStorage.removeItem('currentUser');
-    window.location.href = 'login.html';
+    if (typeof firebaseAuth !== 'undefined' && firebaseAuth.logoutUser) {
+        firebaseAuth.logoutUser();
+    } else {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+    }
 }
 
 function toggleUserMenu() {
@@ -1055,4 +1077,72 @@ function nextWeek() {
 function addEventToSlot(slotId) {
     // Logique pour ajouter un événement à un créneau spécifique
     showAddEventModal();
+}
+
+// Fonction pour changer l'avatar
+function changeAvatar() {
+    // Créer un input file caché
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const avatarData = e.target.result;
+                
+                // Mettre à jour l'avatar dans l'interface
+                const profileAvatar = document.getElementById('profileAvatar');
+                const userAvatar = document.getElementById('userAvatar');
+                
+                if (profileAvatar) {
+                    profileAvatar.innerHTML = `<img src="${avatarData}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                }
+                
+                if (userAvatar) {
+                    userAvatar.innerHTML = `<img src="${avatarData}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                }
+                
+                // Sauvegarder l'avatar dans localStorage
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                currentUser.avatar = avatarData;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                // Sauvegarder dans Firebase si disponible
+                if (typeof firebaseAuth !== 'undefined' && firebaseAuth.saveUserProfileToFirebase) {
+                    firebaseAuth.saveUserProfileToFirebase({
+                        name: currentUser.name || 'Utilisateur',
+                        email: currentUser.email || '',
+                        avatar: avatarData
+                    });
+                }
+                
+                showNotification('Avatar mis à jour', 'Votre avatar a été modifié avec succès');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+}
+
+// Fonction pour charger l'avatar utilisateur
+function loadUserAvatar() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const userAvatar = document.getElementById('userAvatar');
+    
+    if (currentUser.avatar) {
+        if (profileAvatar) {
+            profileAvatar.innerHTML = `<img src="${currentUser.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        }
+        if (userAvatar) {
+            userAvatar.innerHTML = `<img src="${currentUser.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        }
+    }
 }
