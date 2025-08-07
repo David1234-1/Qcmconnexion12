@@ -215,6 +215,12 @@ body {
     border: 1px solid #fecaca;
 }
 
+.message.info {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+}
+
 /* Modal */
 .modal {
     display: none;
