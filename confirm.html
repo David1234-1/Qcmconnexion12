@@ -7,22 +7,18 @@
     <link rel="stylesheet" href="css/auth.css">
     <script type="module">
     import { supabase } from './js/supabase-config.js';
-    const params = new URLSearchParams(window.location.hash.replace('#', '?'));
-    const access_token = params.get('access_token');
-    const refresh_token = params.get('refresh_token');
-    const messageDiv = document.getElementById('message');
-    if (access_token && refresh_token) {
-        supabase.auth.setSession({ access_token, refresh_token }).then(({ error }) => {
-            if (error) {
-                messageDiv.innerHTML = `<div class='error'>${error.message}</div>`;
-            } else {
-                messageDiv.innerHTML = '<div class="success">Compte confirmé ! Redirection...</div>';
-                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
-            }
-        });
-    } else {
-        messageDiv.innerHTML = '<div class="info">Cliquez sur le lien de confirmation reçu par email.</div>';
+    async function checkAuth() {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      if (session) {
+        window.location.href = '/dashboard.html';
+      }
     }
+    window.addEventListener('load', checkAuth);
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') window.location.href = '/dashboard.html';
+      if (event === 'SIGNED_OUT') window.location.href = '/login.html';
+    });
     </script>
 </head>
 <body>

@@ -16,6 +16,24 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script type="module">
+    import { supabase } from './js/supabase-config.js';
+    async function checkAuth() {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      if (!session) {
+        window.location.href = '/login.html';
+      }
+    }
+    window.addEventListener('load', checkAuth);
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') window.location.href = '/login.html';
+    });
+    </script>
+    <script type="module" src="js/supabase-config.js"></script>
+    <script src="js/pdf.min.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/fullcalendar-init.js"></script>
 </head>
 <body>
     <!-- Navigation -->

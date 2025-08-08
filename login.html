@@ -8,6 +8,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Supabase -->
+    <script type="module">
+    import { supabase } from './js/supabase-config.js';
+    async function checkAuth() {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      if (session) {
+        if (window.location.pathname === '/login.html' || window.location.pathname === '/register.html') {
+          window.location.href = '/dashboard.html';
+        }
+      } else {
+        if (window.location.pathname !== '/login.html' && window.location.pathname !== '/register.html') {
+          window.location.href = '/login.html';
+        }
+      }
+    }
+    window.addEventListener('load', checkAuth);
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') window.location.href = '/dashboard.html';
+      if (event === 'SIGNED_OUT') window.location.href = '/login.html';
+    });
+    </script>
     <script type="module" src="js/supabase-config.js"></script>
 </head>
 <body>
