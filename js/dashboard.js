@@ -1,3 +1,5 @@
+import { supabase } from './supabase-config.js';
+
 // Variables globales
 let currentUser = null;
 let courses = [];
@@ -140,26 +142,35 @@ function processFiles(files) {
     });
 }
 
-function processFile(file) {
-    const course = {
-        id: Date.now() + Math.random(),
-        name: file.name.replace('.pdf', ''),
-        fileName: file.name,
-        uploadDate: new Date().toISOString(),
-        size: file.size,
-        qcmCount: parseInt(document.getElementById('qcmCount').value) || 10,
-        flashcardsCount: parseInt(document.getElementById('flashcardsCount').value) || 20,
-        difficulty: document.getElementById('difficulty').value || 'moyen'
-    };
+// Fonction pour obtenir l'utilisateur connecté Supabase
+async function getCurrentUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+}
 
-    courses.push(course);
-    localStorage.setItem('courses', JSON.stringify(courses));
-
-    // Sauvegarder dans Firebase si disponible
-    if (typeof firebaseAuth !== 'undefined' && firebaseAuth.saveCourseToFirebase) {
-        firebaseAuth.saveCourseToFirebase(course);
+// Upload PDF dans Supabase Storage
+async function uploadCourseFile(file) {
+    const user = await getCurrentUser();
+    if (!user) return;
+    const { error } = await supabase.storage.from('cours').upload(`${user.id}/${file.name}`, file, { cacheControl: '3600', upsert: true });
+    if (error) {
+        showNotification('Erreur upload PDF', 'error');
+    } else {
+        showNotification('Fichier PDF importé avec succès', 'success');
     }
+}
 
+// Sauvegarder un QCM dans la table qcm
+async function saveQcmToSupabase(qcm) {
+    const user = await getCurrentUser();
+    if (!user) return;
+    const { error } = await supabase.from('qcm').insert([{ ...qcm, user_id: user.id }]);
+    if (error) showNotification('Erreur sauvegarde QCM', 'error');
+}
+
+// Adapter processFile pour upload PDF et sauvegarder le cours
+function processFile(file) {
+    uploadCourseFile(file);
     // Générer des QCM et flashcards simulés
     generateQcmForCourse(course);
     generateFlashcardsForCourse(course);
