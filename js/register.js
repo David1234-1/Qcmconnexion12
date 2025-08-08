@@ -28,12 +28,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             messageDiv.innerHTML = '<div class="info">Création du compte en cours...</div>';
-            const { data, error } = await supabase.auth.signUp({ email, password });
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    emailRedirectTo: window.location.origin + '/confirm.html'
+                }
+            });
             if (error) {
                 messageDiv.innerHTML = `<div class='error'>${error.message}</div>`;
             } else {
-                messageDiv.innerHTML = '<div class="success">Compte créé avec succès ! Vérifiez vos emails pour valider votre compte.</div>';
-                setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                messageDiv.innerHTML = '<div class="success">Compte créé ! Vérifiez vos emails pour valider votre compte.</div>';
+                setTimeout(() => { window.location.href = 'confirm.html'; }, 2000);
             }
         });
     }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de compte</title>
+    <link rel="stylesheet" href="css/auth.css">
+    <script type="module">
+    import { supabase } from './js/supabase-config.js';
+    const params = new URLSearchParams(window.location.hash.replace('#', '?'));
+    const access_token = params.get('access_token');
+    const refresh_token = params.get('refresh_token');
+    const messageDiv = document.getElementById('message');
+    if (access_token && refresh_token) {
+        supabase.auth.setSession({ access_token, refresh_token }).then(({ error }) => {
+            if (error) {
+                messageDiv.innerHTML = `<div class='error'>${error.message}</div>`;
+            } else {
+                messageDiv.innerHTML = '<div class="success">Compte confirmé ! Redirection...</div>';
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+            }
+        });
+    } else {
+        messageDiv.innerHTML = '<div class="info">Cliquez sur le lien de confirmation reçu par email.</div>';
+    }
+    </script>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Confirmation de compte</h1>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+</body>
+</html>

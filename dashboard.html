@@ -598,5 +598,16 @@
     <script src="js/pdf.min.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/fullcalendar-init.js"></script>
+    <script type="module">
+import { supabase } from './js/supabase-config.js';
+
+supabase.auth.getUser().then(({ data }) => {
+  if (!data.user) window.location.href = 'login.html';
+});
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (!session) window.location.href = 'login.html';
+});
+</script>
 </body>
 </html>
