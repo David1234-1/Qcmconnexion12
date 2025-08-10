@@ -1090,7 +1090,12 @@ function updateUserInterface() {
     }
 }
 
-function logout() {
+async function logout() {
+    try {
+        if (window.supabase?.auth?.signOut) {
+            await window.supabase.auth.signOut()
+        }
+    } catch (e) {}
     localStorage.removeItem('currentUser');
     window.location.href = 'login.html';
 }
