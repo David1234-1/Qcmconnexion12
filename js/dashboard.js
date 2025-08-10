@@ -57,12 +57,39 @@ function setupEventListeners() {
     // Import de fichiers
     const fileInput = document.getElementById('fileInput');
     const uploadArea = document.getElementById('uploadArea');
+    const selectFileBtn = document.getElementById('selectFileBtn');
+    const startImportBtn = document.getElementById('startImportBtn');
     
     if (fileInput) {
-        fileInput.addEventListener('change', handleFileUpload);
+        // Mise en file d’attente des fichiers sélectionnés
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files || []);
+            if (files.length > 0) {
+                pendingImportFiles = files;
+                showNotification(`${files.length} fichier(s) prêt(s) à importer. Cliquez sur Importer.`, 'info');
+            }
+        });
+    }
+    if (selectFileBtn && fileInput) {
+        selectFileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            fileInput.click();
+        });
+    }
+    if (startImportBtn) {
+        startImportBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!pendingImportFiles || pendingImportFiles.length === 0) {
+                showNotification('Aucun fichier sélectionné.', 'error');
+                return;
+            }
+            processFiles(pendingImportFiles);
+            pendingImportFiles = [];
+            if (fileInput) fileInput.value = '';
+        });
     }
     
-    if (uploadArea) {
+    if (uploadArea && fileInput) {
         uploadArea.addEventListener('dragover', handleDragOver);
         uploadArea.addEventListener('drop', handleDrop);
         uploadArea.addEventListener('click', () => fileInput.click());
@@ -73,6 +100,35 @@ function setupEventListeners() {
     if (profileForm) {
         profileForm.addEventListener('submit', handleProfileSubmit);
     }
+    // Input de changement d’avatar caché
+    const avatarInput = document.createElement('input');
+    avatarInput.type = 'file';
+    avatarInput.accept = 'image/*';
+    avatarInput.id = 'avatarInputHidden';
+    avatarInput.style.display = 'none';
+    document.body.appendChild(avatarInput);
+    const avatarBtn = document.querySelector('.btn-change-avatar');
+    if (avatarBtn) {
+        avatarBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            avatarInput.click();
+        });
+    }
+    avatarInput.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const dataUrl = reader.result;
+            if (currentUser) {
+                currentUser.avatar = dataUrl;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                loadUserData();
+                showNotification('Avatar mis à jour !', 'success');
+            }
+        };
+        reader.readAsDataURL(file);
+    });
 
     // Formulaire de contact
     const contactForm = document.getElementById('contactForm');
@@ -85,13 +141,44 @@ function setupEventListeners() {
     if (dashboardContactForm) {
         dashboardContactForm.addEventListener('submit', handleDashboardContactSubmit);
     }
+
+    // Toolbar des cours
+    const searchCours = document.getElementById('searchCours');
+    const filterMatiere = document.getElementById('filterMatiere');
+    const filterParcours = document.getElementById('filterParcours');
+    if (searchCours) searchCours.addEventListener('input', displayCourses);
+    if (filterMatiere) filterMatiere.addEventListener('change', displayCourses);
+    if (filterParcours) filterParcours.addEventListener('change', displayCourses);
+
+    // Matières
+    const addMatiereBtn = document.getElementById('addMatiereBtn');
+    if (addMatiereBtn) addMatiereBtn.addEventListener('click', addMatiere);
+
+    // Calendrier vues et navigation
+    const viewDay = document.getElementById('viewDay');
+    const viewWeek = document.getElementById('viewWeek');
+    const viewMonth = document.getElementById('viewMonth');
+    const prevPeriod = document.getElementById('prevPeriod');
+    const nextPeriod = document.getElementById('nextPeriod');
+    const addEventBtn = document.getElementById('addEventBtn');
+
+    if (viewDay) viewDay.addEventListener('click', () => changeCalendarView('day'));
+    if (viewWeek) viewWeek.addEventListener('click', () => changeCalendarView('week'));
+    if (viewMonth) viewMonth.addEventListener('click', () => changeCalendarView('month'));
+    if (prevPeriod) prevPeriod.addEventListener('click', () => navigateCalendar(-1));
+    if (nextPeriod) nextPeriod.addEventListener('click', () => navigateCalendar(1));
+    if (addEventBtn) addEventBtn.addEventListener('click', showAddEventModal);
 }
+
+// Files en attente d’import
+let pendingImportFiles = [];
 
 // Gestion de l'upload de fichiers améliorée
 function handleFileUpload(event) {
     const files = event.target.files;
     if (files.length > 0) {
-        processFiles(Array.from(files));
+        pendingImportFiles = Array.from(files);
+        showNotification(`${files.length} fichier(s) prêt(s) à importer. Cliquez sur Importer.`, 'info');
     }
 }
 
@@ -104,52 +191,68 @@ function handleDrop(event) {
     event.preventDefault();
     event.currentTarget.classList.remove('drag-over');
     const files = Array.from(event.dataTransfer.files);
-    processFiles(files);
+    pendingImportFiles = files;
+    showNotification(`${files.length} fichier(s) prêt(s) à importer. Cliquez sur Importer.`, 'info');
 }
 
 function processFiles(files) {
-    const pdfFiles = files.filter(file => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
+    const allowed = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'text/plain'
+    ];
+    const acceptedFiles = files.filter(file => allowed.includes(file.type) || file.type.startsWith('image/') || file.name.toLowerCase().endsWith('.pdf') || file.name.toLowerCase().endsWith('.doc') || file.name.toLowerCase().endsWith('.docx') || file.name.toLowerCase().endsWith('.ppt') || file.name.toLowerCase().endsWith('.pptx') || file.name.toLowerCase().endsWith('.txt'));
     
-    if (pdfFiles.length === 0) {
-        showNotification('Veuillez sélectionner des fichiers PDF valides.', 'error');
+    if (acceptedFiles.length === 0) {
+        showNotification('Veuillez sélectionner des fichiers valides.', 'error');
         return;
     }
 
     showImportProgress();
     
-    // Simuler le traitement des fichiers
     let processedCount = 0;
-    pdfFiles.forEach((file, index) => {
+    acceptedFiles.forEach((file, index) => {
         setTimeout(() => {
             processFile(file);
             processedCount++;
-            
-            if (processedCount === pdfFiles.length) {
+            if (processedCount === acceptedFiles.length) {
                 hideImportProgress();
-                showNotification(`${pdfFiles.length} fichier(s) importé(s) avec succès !`, 'success');
+                showNotification(`${acceptedFiles.length} fichier(s) importé(s) avec succès !`, 'success');
                 updateDashboardStats();
                 displayRecentCourses();
+                displayCourses();
             }
-        }, (index + 1) * 1000);
+        }, (index + 1) * 500);
     });
 }
 
 function processFile(file) {
     const course = {
         id: Date.now() + Math.random(),
-        name: file.name.replace('.pdf', ''),
+        name: file.name.replace(/\.[^.]+$/, ''),
         fileName: file.name,
         uploadDate: new Date().toISOString(),
         size: file.size,
-        qcmCount: parseInt(document.getElementById('qcmCount').value) || 10,
-        flashcardsCount: parseInt(document.getElementById('flashcardsCount').value) || 20,
-        difficulty: document.getElementById('difficulty').value || 'moyen'
+        qcmCount: parseInt(document.getElementById('qcmCount')?.value) || 10,
+        flashcardsCount: parseInt(document.getElementById('flashcardsCount')?.value) || 20,
+        difficulty: document.getElementById('difficulty')?.value || 'moyen',
+        matiere: '',
+        parcours: '',
+        mimeType: file.type || '',
+        filePreviewUrl: ''
     };
+
+    // Créer un preview local pour images/PDF via blob URL
+    try {
+        course.filePreviewUrl = URL.createObjectURL(file);
+    } catch {}
 
     courses.push(course);
     localStorage.setItem('courses', JSON.stringify(courses));
 
-    // Générer des QCM et flashcards simulés
     generateQcmForCourse(course);
     generateFlashcardsForCourse(course);
 }
@@ -713,36 +816,68 @@ function loadCalendarEvents() {
 
 function initializeCalendar() {
     const container = document.getElementById('calendarContainer');
+    const rangeLabel = document.getElementById('currentRange');
     if (!container) return;
 
-    const today = new Date();
-    const currentWeek = getWeekDates(today);
-    
-    container.innerHTML = `
-        <div class="calendar-header">
-            <button onclick="previousWeek()" class="btn-calendar-nav">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <h3>${formatWeekRange(currentWeek)}</h3>
-            <button onclick="nextWeek()" class="btn-calendar-nav">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-        <div class="calendar-grid">
-            <div class="calendar-time-column">
-                <div class="time-header">Heure</div>
-                ${generateTimeSlots()}
-            </div>
-            ${generateDayColumns(currentWeek)}
-        </div>
-        <div class="calendar-actions">
-            <button onclick="showAddEventModal()" class="btn-primary">
-                <i class="fas fa-plus"></i> Ajouter un événement
-            </button>
-        </div>
-    `;
+    let html = '';
+    if (calendarView === 'day') {
+        const d = new Date(calendarCursorDate);
+        const rangeText = d.toLocaleDateString();
+        if (rangeLabel) rangeLabel.textContent = rangeText;
+        html = `<div class="calendar-day">${generateDaySlotsHtml(d)}</div>`;
+        container.innerHTML = html;
+        displayEvents([d]);
+    } else if (calendarView === 'week') {
+        const week = getWeekDates(calendarCursorDate);
+        if (rangeLabel) rangeLabel.textContent = formatWeekRange(week);
+        html = `<div class="calendar-grid"><div class="calendar-time-column">${generateTimeSlots()}</div>${generateDayColumns(week)}</div>`;
+        container.innerHTML = html;
+        displayEvents(week);
+    } else {
+        const monthDates = getMonthDates(calendarCursorDate);
+        if (rangeLabel) rangeLabel.textContent = formatMonthRange(calendarCursorDate);
+        html = `<div class="calendar-month">${generateMonthGrid(monthDates)}</div>`;
+        container.innerHTML = html;
+        displayEventsMonth(monthDates);
+    }
+}
 
-    displayEvents(currentWeek);
+function generateDaySlotsHtml(date) {
+    return `<div class="day-header"><span>${date.toLocaleDateString()}</span></div>${generateDaySlots(date)}`;
+}
+
+function getMonthDates(date) {
+    const first = new Date(date.getFullYear(), date.getMonth(), 1);
+    const last = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const days = [];
+    for (let d = new Date(first); d <= last; d.setDate(d.getDate() + 1)) {
+        days.push(new Date(d));
+    }
+    return days;
+}
+
+function generateMonthGrid(days) {
+    const weeks = [];
+    let week = [];
+    days.forEach((d, idx) => {
+        if ((d.getDay() === 1 || idx === 0) && week.length) {
+            weeks.push(week);
+            week = [];
+        }
+        week.push(d);
+    });
+    if (week.length) weeks.push(week);
+    return weeks.map(w => `<div class="month-week">${w.map(d => `<div class="month-day"><div class="day-label">${d.getDate()}</div></div>`).join('')}</div>`).join('');
+}
+
+function formatMonthRange(date) {
+    const m = date.toLocaleString(undefined, { month: 'long', year: 'numeric' });
+    return m;
+}
+
+function displayEventsMonth(days) {
+    // Simplifié: réutilise displayEvents avec une semaine couvrant le mois
+    displayEvents([days[0], days[days.length - 1]]);
 }
 
 function generateTimeSlots() {
@@ -869,9 +1004,10 @@ function showAddEventModal() {
                     <label for="eventCategory">Catégorie</label>
                     <select id="eventCategory" required>
                         <option value="cours">Cours</option>
+                        <option value="devoir">Devoir</option>
                         <option value="qcm">QCM</option>
                         <option value="revision">Révision</option>
-                        <option value="pause">Pause</option>
+                        <option value="projet">Projet</option>
                         <option value="autre">Autre</option>
                     </select>
                 </div>
@@ -886,13 +1022,8 @@ function showAddEventModal() {
             </form>
         </div>
     `;
-    
     document.body.appendChild(modal);
-    
-    // Définir la date d'aujourd'hui par défaut
-    document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
-    
-    // Gérer la soumission du formulaire
+    document.getElementById('eventDate').value = calendarCursorDate.toISOString().split('T')[0];
     document.getElementById('addEventForm').addEventListener('submit', handleAddEvent);
 }
 
@@ -906,7 +1037,6 @@ function generateHourOptions() {
 
 function handleAddEvent(event) {
     event.preventDefault();
-    
     const newEvent = {
         id: Date.now() + Math.random(),
         title: document.getElementById('eventTitle').value,
@@ -916,10 +1046,8 @@ function handleAddEvent(event) {
         category: document.getElementById('eventCategory').value,
         color: document.getElementById('eventColor').value
     };
-    
     calendarEvents.push(newEvent);
     localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents));
-    
     closeModal();
     initializeCalendar();
     showNotification('Événement ajouté avec succès !', 'success');
@@ -1119,4 +1247,141 @@ function nextWeek() {
 function addEventToSlot(slotId) {
     // Logique pour ajouter un événement à un créneau spécifique
     showAddEventModal();
+}
+
+// Affichage des cours + visionneuse
+function displayCourses() {
+    const container = document.getElementById('coursesTable');
+    if (!container) return;
+
+    let filtered = [...courses];
+    const q = document.getElementById('searchCours')?.value?.toLowerCase() || '';
+    const matiere = document.getElementById('filterMatiere')?.value || '';
+    const parcours = document.getElementById('filterParcours')?.value || '';
+    if (q) filtered = filtered.filter(c => c.name.toLowerCase().includes(q));
+    if (matiere) filtered = filtered.filter(c => (c.matiere || '') === matiere);
+    if (parcours) filtered = filtered.filter(c => (c.parcours || '') === parcours);
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-book"></i><h3>Aucun cours</h3></div>`;
+        return;
+    }
+
+    container.innerHTML = filtered.map(c => `
+        <div class="course-card">
+            <div class="course-icon"><i class="fas fa-file"></i></div>
+            <div class="course-info">
+                <h4>${c.name}</h4>
+                <p>${new Date(c.uploadDate).toLocaleDateString()}</p>
+                <div class="course-meta">
+                    <span>${c.matiere || 'Sans matière'}</span>
+                    <span>${c.parcours || ''}</span>
+                </div>
+                <div class="course-actions">
+                    <button class="btn-small" onclick="openViewer('${c.id}')"><i class="fas fa-eye"></i> Ouvrir</button>
+                    <button class="btn-small" onclick="startQcm('${c.id}')"><i class="fas fa-play"></i> QCM</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+window.openViewer = function(courseId) {
+    const course = courses.find(c => c.id == courseId);
+    if (!course) return;
+    const modal = document.getElementById('viewerModal');
+    const body = document.getElementById('viewerBody');
+    const title = document.getElementById('viewerTitle');
+    title.textContent = course.fileName;
+
+    const type = (course.mimeType || '').toLowerCase();
+    let html = '';
+    if (type.includes('pdf')) {
+        html = `<iframe src="${course.filePreviewUrl}" style="width:100%;height:80vh;border:0;"></iframe>`;
+    } else if (type.startsWith('image/')) {
+        html = `<img src="${course.filePreviewUrl}" style="max-width:100%;height:auto;">`;
+    } else {
+        html = `<p>Aperçu non disponible. Téléchargez le fichier: <a href="${course.filePreviewUrl}" download> Télécharger</a></p>`;
+    }
+    body.innerHTML = html;
+    modal.style.display = 'flex';
+}
+
+window.closeViewer = function() {
+    const modal = document.getElementById('viewerModal');
+    const body = document.getElementById('viewerBody');
+    modal.style.display = 'none';
+    body.innerHTML = '';
+}
+
+// Matières CRUD simple
+let matieres = [];
+function addMatiere() {
+    const nameInput = document.getElementById('matiereName');
+    const parcoursInput = document.getElementById('parcoursName');
+    const name = nameInput.value.trim();
+    const parcours = parcoursInput.value.trim();
+    if (!name) return showNotification('Nom de matière requis', 'error');
+    matieres.push({ id: Date.now() + Math.random(), name, parcours });
+    localStorage.setItem('matieres', JSON.stringify(matieres));
+    nameInput.value = '';
+    parcoursInput.value = '';
+    refreshMatieresUI();
+    refreshMatiereFilters();
+}
+
+function refreshMatieresUI() {
+    const list = document.getElementById('matieresList');
+    if (!list) return;
+    if (matieres.length === 0) {
+        list.innerHTML = `<div class="empty-state"><i class="fas fa-folder"></i><h3>Aucune matière</h3></div>`;
+        return;
+    }
+    list.innerHTML = matieres.map(m => `
+        <div class="matiere-item">
+            <div>
+                <strong>${m.name}</strong> ${m.parcours ? `- ${m.parcours}` : ''}
+            </div>
+            <div>
+                <button class="btn-small" onclick="deleteMatiere('${m.id}')"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+window.deleteMatiere = function(id) {
+    matieres = matieres.filter(m => m.id != id);
+    localStorage.setItem('matieres', JSON.stringify(matieres));
+    refreshMatieresUI();
+    refreshMatiereFilters();
+}
+
+function refreshMatiereFilters() {
+    const matSel = document.getElementById('filterMatiere');
+    const parSel = document.getElementById('filterParcours');
+    if (!matSel || !parSel) return;
+    const uniqueMat = [''].concat([...new Set(matieres.map(m => m.name))]);
+    const uniquePar = [''].concat([...new Set(matieres.map(m => m.parcours).filter(Boolean))]);
+    matSel.innerHTML = uniqueMat.map(v => `<option value="${v}">${v || 'Toutes les matières'}</option>`).join('');
+    parSel.innerHTML = uniquePar.map(v => `<option value="${v}">${v || 'Tous les parcours'}</option>`).join('');
+}
+
+// Calendrier: vues flexibles
+let calendarView = 'week';
+let calendarCursorDate = new Date();
+
+function changeCalendarView(view) {
+    calendarView = view;
+    initializeCalendar();
+}
+
+function navigateCalendar(direction) {
+    if (calendarView === 'day') {
+        calendarCursorDate.setDate(calendarCursorDate.getDate() + direction);
+    } else if (calendarView === 'week') {
+        calendarCursorDate.setDate(calendarCursorDate.getDate() + direction * 7);
+    } else {
+        calendarCursorDate.setMonth(calendarCursorDate.getMonth() + direction);
+    }
+    initializeCalendar();
 }

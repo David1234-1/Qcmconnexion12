@@ -1851,3 +1851,18 @@ body {
         gap: 1rem;
     }
 }
+
+.courses-toolbar, .calendar-toolbar, .matiere-actions { display:flex; gap:12px; align-items:center; margin:12px 0; flex-wrap:wrap; }
+.courses-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:16px; }
+.course-card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:12px; display:flex; gap:12px; }
+.course-card .course-icon { font-size:24px; color:#2563eb; }
+.course-actions { display:flex; gap:8px; margin-top:8px; }
+.matiere-item { display:flex; align-items:center; justify-content:space-between; padding:10px; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:8px; background:#fff; }
+
+.calendar-day .day-header { font-weight:600; margin-bottom:8px; }
+.calendar-month { display:flex; flex-direction:column; gap:8px; }
+.month-week { display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; }
+.month-day { min-height:100px; border:1px dashed #e5e7eb; border-radius:8px; padding:6px; background:#fff; }
+.day-label { font-size:12px; color:#6b7280; }
+
+.modal .viewer-body iframe { background:#fff; }

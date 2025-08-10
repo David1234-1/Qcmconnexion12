@@ -24,6 +24,14 @@
                     <i class="fas fa-upload"></i>
                     Importer
                 </a>
+                <a href="#cours" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    Cours
+                </a>
+                <a href="#matieres" class="nav-link">
+                    <i class="fas fa-folder"></i>
+                    Matières
+                </a>
                 <!-- Les liens QCM, Flashcards et Résumés sont masqués ici -->
                 <!--<a href="#qcm" class="nav-link">
                     <i class="fas fa-question-circle"></i>
@@ -193,10 +201,11 @@
                             <i class="fas fa-cloud-upload-alt"></i>
                             <h3>Glissez-déposez votre PDF ici</h3>
                             <p>ou cliquez pour sélectionner un fichier</p>
-                            <input type="file" id="fileInput" accept=".pdf,image/*" hidden>
-                            <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
-                                Choisir un fichier
+                            <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,image/*,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
+                            <button class="btn-primary" id="selectFileBtn">
+                                Choisir des fichiers
                             </button>
+                            <button class="btn-secondary" id="startImportBtn">Importer</button>
                         </div>
                     </div>
 
@@ -474,21 +483,78 @@
             </div>
         </section>
 
-        <!-- Calendrier -->
+        <!-- Cours -->
+        <section id="cours" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Mes Cours</h1>
+                    <p>Consultez et organisez vos cours importés</p>
+                </div>
+                <div class="courses-toolbar">
+                    <select id="filterMatiere">
+                        <option value="">Toutes les matières</option>
+                    </select>
+                    <select id="filterParcours">
+                        <option value="">Tous les parcours</option>
+                    </select>
+                    <input type="text" id="searchCours" placeholder="Rechercher un cours...">
+                </div>
+                <div id="coursesTable" class="courses-grid"></div>
+            </div>
+        </section>
+
+        <!-- Matières -->
+        <section id="matieres" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Matières</h1>
+                    <p>Créez des matières, parcours et organisez vos cours</p>
+                </div>
+                <div class="matiere-actions">
+                    <input type="text" id="matiereName" placeholder="Nom de la matière">
+                    <input type="text" id="parcoursName" placeholder="Parcours (optionnel)">
+                    <button class="btn-primary" id="addMatiereBtn"><i class="fas fa-plus"></i> Ajouter</button>
+                </div>
+                <div id="matieresList" class="matieres-list"></div>
+            </div>
+        </section>
+
+        <!-- Calendrier amélioré -->
         <section id="calendrier" class="dashboard-section">
             <div class="container">
                 <div class="section-header">
                     <h1>Mon Calendrier</h1>
                     <p>Gérez votre emploi du temps et planifiez vos révisions</p>
                 </div>
-
-                <div class="calendar-container">
-                    <div id="calendarContainer">
-                        <!-- Le calendrier sera généré ici par JavaScript -->
+                <div class="calendar-toolbar">
+                    <div class="view-switch">
+                        <button class="btn-secondary" id="viewDay">Jour</button>
+                        <button class="btn-secondary" id="viewWeek">Semaine</button>
+                        <button class="btn-secondary" id="viewMonth">Mois</button>
                     </div>
+                    <div class="nav-switch">
+                        <button class="btn-calendar-nav" id="prevPeriod"><i class="fas fa-chevron-left"></i></button>
+                        <span id="currentRange"></span>
+                        <button class="btn-calendar-nav" id="nextPeriod"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <button class="btn-primary" id="addEventBtn"><i class="fas fa-plus"></i> Ajouter un événement</button>
+                </div>
+                <div class="calendar-container">
+                    <div id="calendarContainer"></div>
                 </div>
             </div>
         </section>
+
+        <!-- Modal visionneuse de documents -->
+        <div id="viewerModal" class="modal">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h3 id="viewerTitle">Document</h3>
+                    <button class="close-btn" onclick="closeViewer()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="viewer-body" id="viewerBody"></div>
+            </div>
+        </div>
 
         <!-- Contact -->
         <section id="contact" class="dashboard-section">
